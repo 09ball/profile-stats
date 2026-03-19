@@ -1,0 +1,29 @@
+name: Profile Stats
+description: Generate and update your GitHub profile README with stats
+
+inputs:
+  github-token:
+    description: GitHub token for API access
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      shell: bash
+      run: pip install -q -r "${{ github.action_path }}/requirements.txt"
+
+    - name: Update profile stats
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+      run: python "${{ github.action_path }}/entrypoint.py"
